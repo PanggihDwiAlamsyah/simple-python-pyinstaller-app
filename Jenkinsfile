@@ -6,20 +6,24 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                // Install pytest
-                sh 'pip install pytest'
+                // Membuat virtual environment
+                sh 'python3 -m venv venv'
+                // Mengaktifkan virtual environment dan menginstal pytest
+                sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest'
             }
         }
         stage('Build') {
             steps {
-                sh 'python -m py_compile sources/add2vals.py sources/calc.py'
+                // Mengaktifkan virtual environment dan menjalankan py_compile
+                sh '. venv/bin/activate && python -m py_compile sources/add2vals.py sources/calc.py'
+                // Stash hasil compile
                 stash(name: 'compiled-results', includes: 'sources/*.py*')
             }
         }
         stage('Test') {
             steps {
-                // Gantilah py.test dengan pytest
-                sh 'pytest --junit-xml test-reports/results.xml sources/test_calc.py'
+                // Mengaktifkan virtual environment dan menjalankan pytest
+                sh '. venv/bin/activate && pytest --junit-xml test-reports/results.xml sources/test_calc.py'
             }
             post {
                 always {
@@ -29,7 +33,8 @@ pipeline {
         }
         stage('Deliver') {
             steps {
-                sh "pyinstaller --onefile sources/add2vals.py"
+                // Mengaktifkan virtual environment dan menjalankan pyinstaller
+                sh '. venv/bin/activate && pyinstaller --onefile sources/add2vals.py'
             }
             post {
                 success {
