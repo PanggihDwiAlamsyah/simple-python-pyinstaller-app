@@ -8,8 +8,8 @@ pipeline {
             steps {
                 // Membuat virtual environment
                 sh 'python3 -m venv venv'
-                // Mengaktifkan virtual environment dan menginstal pytest
-                sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest'
+                // Mengaktifkan virtual environment dan menginstal pytest serta pyinstaller
+                sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest pyinstaller'
             }
         }
         stage('Build') {
