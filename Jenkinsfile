@@ -1,15 +1,12 @@
 node {
-    // Polling Git repository setiap 2 menit sekali
-    properties([
-        // Ganti dengan polling SCM yang tepat
-        pollSCM('H/2 * * * *')
-    ])
-    
+    // Mengatur polling SCM
+    properties([pollSCM('H/2 * * * *')])
+
     try {
         stage('Checkout') {
             checkout scm
         }
-        
+
         stage('Install Dependencies') {
             sh 'python3 -m venv venv'
             sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest pyinstaller'
@@ -27,7 +24,7 @@ node {
 
         stage('Deliver') {
             sh '. venv/bin/activate && pyinstaller --onefile sources/add2vals.py'
-            archiveArtifacts 'dist/add2vals'
+            archiveArtifacts artifacts: 'dist/add2vals', fingerprint: true
         }
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
