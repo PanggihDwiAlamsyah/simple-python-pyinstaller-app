@@ -1,4 +1,5 @@
 node {
+    env.PATH = "${tool 'NodeJS'}/bin:${env.PATH}"
     // Polling Git repository setiap 2 menit sekali
     properties([
         // Ganti dengan polling SCM yang tepat
