@@ -1,7 +1,15 @@
 node {
-    properties([pollSCM('H/2 * * * *')])  // Poll SCM setiap 2 menit
-
+    // Polling Git repository setiap 2 menit sekali
+    properties([
+        // Ganti dengan polling SCM yang tepat
+        pollSCM('H/2 * * * *')
+    ])
+    
     try {
+        stage('Checkout') {
+            checkout scm
+        }
+        
         stage('Install Dependencies') {
             sh 'python3 -m venv venv'
             sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest pyinstaller'
@@ -9,7 +17,7 @@ node {
 
         stage('Build') {
             sh '. venv/bin/activate && python -m py_compile sources/add2vals.py sources/calc.py'
-            stash(name: 'compiled-results', includes: 'sources/*.py*')
+            stash name: 'compiled-results', includes: 'sources/*.py*'
         }
 
         stage('Test') {
