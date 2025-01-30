@@ -51,3 +51,4 @@ node {
         currentBuild.result = 'FAILURE'
     }
 }
+"Mengaktifkan virtual environment dan menjalankan pyinstaller"
