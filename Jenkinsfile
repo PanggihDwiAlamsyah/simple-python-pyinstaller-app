@@ -1,9 +1,16 @@
 node {
+    // Menetapkan properti pipeline untuk polling SCM setiap 2 menit
+    properties([
+        pipelineTriggers([
+            pollSCM('H/2 * * * *')  // Poll setiap 2 menit
+        ])
+    ])
+
     // Definisi variabel untuk jalur virtual environment
     def venvPath = 'venv/bin/activate'
-    
+
     try {
-        stage('Checkout Code') {
+        stage('Checkout') {
             echo "Mengambil kode terbaru dari repository Git"
             checkout scm
         }
