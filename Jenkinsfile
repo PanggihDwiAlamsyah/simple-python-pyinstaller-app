@@ -1,4 +1,3 @@
-env.PATH = "${tool 'NodeJS'}/bin:${env.PATH}"
 node {
     // Polling Git repository setiap 2 menit sekali
     properties([
