@@ -3,6 +3,11 @@ node {
     def venvPath = 'venv/bin/activate'
     
     try {
+        stage('Checkout Code') {
+            echo "Mengambil kode terbaru dari repository Git"
+            checkout scm
+        }
+
         stage('Install Dependencies') {
             echo "Membuat virtual environment"
             sh 'python3 -m venv venv'
