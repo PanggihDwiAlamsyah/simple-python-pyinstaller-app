@@ -1,46 +1,41 @@
-pipeline {
-    agent any
-    options {
-        skipStagesAfterUnstable()
-    }
-    stages {
+node {
+    // Definisi variabel untuk jalur virtual environment
+    def venvPath = 'venv/bin/activate'
+    
+    try {
         stage('Install Dependencies') {
-            steps {
-                // Membuat virtual environment
-                sh 'python3 -m venv venv'
-                // Mengaktifkan virtual environment dan menginstal pytest serta pyinstaller
-                sh '. venv/bin/activate && pip install --upgrade pip && pip install pytest pyinstaller'
-            }
+            echo "Membuat virtual environment"
+            sh 'python3 -m venv venv'
+            
+            echo "Mengaktifkan virtual environment dan menginstal pytest serta pyinstaller"
+            sh ". ${venvPath} && pip install --upgrade pip && pip install pytest pyinstaller"
         }
+
         stage('Build') {
-            steps {
-                // Mengaktifkan virtual environment dan menjalankan py_compile
-                sh '. venv/bin/activate && python -m py_compile sources/add2vals.py sources/calc.py'
-                // Stash hasil compile
-                stash(name: 'compiled-results', includes: 'sources/*.py*')
-            }
+            echo "Mengaktifkan virtual environment dan menjalankan py_compile"
+            sh ". ${venvPath} && python -m py_compile sources/add2vals.py sources/calc.py"
+            
+            echo "Stashing hasil compile"
+            stash name: 'compiled-results', includes: 'sources/*.py*'
         }
+
         stage('Test') {
-            steps {
-                // Mengaktifkan virtual environment dan menjalankan pytest
-                sh '. venv/bin/activate && pytest --junit-xml test-reports/results.xml sources/test_calc.py'
-            }
-            post {
-                always {
-                    junit 'test-reports/results.xml'
-                }
-            }
+            echo "Mengaktifkan virtual environment dan menjalankan pytest"
+            sh ". ${venvPath} && pytest --junit-xml test-reports/results.xml sources/test_calc.py"
+            
+            echo "Menyimpan hasil uji"
+            junit 'test-reports/results.xml'
         }
+
         stage('Deliver') {
-            steps {
-                // Mengaktifkan virtual environment dan menjalankan pyinstaller
-                sh '. venv/bin/activate && pyinstaller --onefile sources/add2vals.py'
-            }
-            post {
-                success {
-                    archiveArtifacts 'dist/add2vals'
-                }
-            }
+            echo "Mengaktifkan virtual environment dan menjalankan pyinstaller"
+            sh ". ${venvPath} && pyinstaller --onefile sources/add2vals.py"
+            
+            echo "Mengarsipkan hasil build"
+            archiveArtifacts artifacts: 'dist/add2vals', fingerprint: true
         }
+    } catch (Exception err) {
+        echo "Build failed: ${err}"
+        currentBuild.result = 'FAILURE'
     }
 }
