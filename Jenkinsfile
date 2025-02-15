@@ -79,6 +79,17 @@ node {
             echo "Deploy selesai, aplikasi akan dihentikan."
         }
 
+        stage('Deliver') {
+            echo "Menjalankan pyinstaller menggunakan Python dari virtual environment"
+            sh '''#!/bin/bash
+                venv/bin/python --version
+                venv/bin/pyinstaller --onefile sources/add2vals.py --log-level=DEBUG
+            '''
+
+            echo "Mengarsipkan hasil build"
+            archiveArtifacts artifacts: 'dist/add2vals', fingerprint: true
+        }
+
     } catch (Exception err) {
         echo "Build failed: ${err}"
         currentBuild.result = 'FAILURE'
