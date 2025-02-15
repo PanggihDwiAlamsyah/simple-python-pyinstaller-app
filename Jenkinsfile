@@ -67,6 +67,18 @@ node {
             }
         }
 
+        stage('Deploy') {
+            echo "Menjalankan aplikasi"
+            sh '''#!/bin/bash
+                nohup venv/bin/python sources/app.py &
+            '''
+
+            echo "Menunggu selama 1 menit agar aplikasi tetap berjalan"
+            sh 'sleep 60'
+
+            echo "Deploy selesai, aplikasi akan dihentikan."
+        }
+
         stage('Deliver') {
             echo "Menjalankan pyinstaller menggunakan Python dari virtual environment"
             sh '''#!/bin/bash
@@ -77,6 +89,7 @@ node {
             echo "Mengarsipkan hasil build"
             archiveArtifacts artifacts: 'dist/add2vals', fingerprint: true
         }
+
     } catch (Exception err) {
         echo "Build failed: ${err}"
         currentBuild.result = 'FAILURE'
