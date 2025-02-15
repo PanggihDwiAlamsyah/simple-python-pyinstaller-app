@@ -53,6 +53,20 @@ node {
             junit 'test-reports/results.xml'
         }
 
+        stage('Manual Approval') {
+            echo "Menunggu persetujuan untuk tahap Deploy"
+            def userInput = input(
+                message: 'Lanjutkan ke tahap Deploy?',
+                parameters: [
+                    choice(name: 'Continue', choices: ['Proceed', 'Abort'], description: 'Pilih untuk melanjutkan atau menghentikan pipeline')
+                ]
+            )
+
+            if (userInput == 'Abort') {
+                error('Pipeline dihentikan oleh pengguna.')
+            }
+        }
+
         stage('Deliver') {
             echo "Menjalankan pyinstaller menggunakan Python dari virtual environment"
             sh '''#!/bin/bash
