@@ -5,8 +5,6 @@ node {
         ])
     ])
 
-    def venvPath = 'venv'
-
     try {
         stage('Checkout') {
             echo "Mengambil kode terbaru dari repository Git"
@@ -16,23 +14,17 @@ node {
         stage('Install Dependencies') {
             echo "Menggunakan Python yang sudah terinstal di container"
 
-            echo "Membuat ulang virtual environment"
+            echo "Menginstal pytest dan pyinstaller tanpa virtual environment"
             sh '''#!/bin/bash
-                rm -rf venv
-                python3.11 -m venv venv
-            '''
-
-            echo "Menginstal pytest dan pyinstaller tanpa aktivasi virtual environment"
-            sh '''#!/bin/bash
-                venv/bin/pip install --upgrade pip
-                venv/bin/pip install pytest pyinstaller
+                python3.11 -m pip install --upgrade pip
+                python3.11 -m pip install pytest pyinstaller
             '''
         }
 
         stage('Build') {
-            echo "Menjalankan py_compile menggunakan Python dari virtual environment"
+            echo "Menjalankan py_compile menggunakan Python langsung"
             sh '''#!/bin/bash
-                venv/bin/python -m py_compile sources/add2vals.py sources/calc.py
+                python3.11 -m py_compile sources/add2vals.py sources/calc.py
             '''
 
             echo "Stashing hasil compile"
@@ -40,9 +32,9 @@ node {
         }
 
         stage('Test') {
-            echo "Menjalankan pytest menggunakan Python dari virtual environment"
+            echo "Menjalankan pytest menggunakan Python langsung"
             sh '''#!/bin/bash
-                venv/bin/pytest --junit-xml test-reports/results.xml sources/test_calc.py
+                python3.11 -m pytest --junit-xml test-reports/results.xml sources/test_calc.py
             '''
 
             echo "Menyimpan hasil uji"
@@ -66,7 +58,7 @@ node {
         stage('Deploy') {
             echo "Menjalankan aplikasi"
             sh '''#!/bin/bash
-                nohup venv/bin/python sources/app.py &
+                nohup python3.11 sources/app.py &
             '''
 
             echo "Menunggu selama 1 menit agar aplikasi tetap berjalan"
