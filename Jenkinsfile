@@ -14,12 +14,18 @@ node {
         stage('Install Dependencies') {
             echo "Menggunakan Python yang sudah terinstal di container"
 
+            echo "Menginstal pip jika belum tersedia"
+            sh '''#!/bin/bash
+            python3.11 -m ensurepip --default-pip
+            python3.11 -m pip install --upgrade pip
+            '''
+
             echo "Menginstal pytest dan pyinstaller tanpa virtual environment"
             sh '''#!/bin/bash
-                python3.11 -m pip install --upgrade pip
-                python3.11 -m pip install pytest pyinstaller
+            python3.11 -m pip install pytest pyinstaller
             '''
         }
+
 
         stage('Build') {
             echo "Menjalankan py_compile menggunakan Python langsung"
