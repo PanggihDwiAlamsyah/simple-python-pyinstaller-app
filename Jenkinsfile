@@ -12,18 +12,14 @@ node {
             echo "Mengambil kode terbaru dari repository Git"
             checkout scm
         }
-
+        
         stage('Install Dependencies') {
-            echo "Menginstal dependencies sistem yang dibutuhkan"
-            sh '''#!/bin/bash
-                apt update
-                apt install -y python3 python3-venv python3-pip build-essential
-            '''
+            echo "Menggunakan Python yang sudah terinstal di container"
 
             echo "Membuat ulang virtual environment"
             sh '''#!/bin/bash
                 rm -rf venv
-                python3 -m venv venv
+                python3.11 -m venv venv
             '''
 
             echo "Menginstal pytest dan pyinstaller tanpa aktivasi virtual environment"
