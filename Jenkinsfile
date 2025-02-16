@@ -11,20 +11,21 @@ node {
             checkout scm
         }
         
-        stage('Install Dependencies') {
-            echo "Menggunakan Python yang sudah terinstal di container"
+       stage('Install Dependencies') {
+    echo "Menggunakan Python yang sudah terinstal di container"
 
-            echo "Menginstal pip jika belum tersedia"
-            sh '''#!/bin/bash
-            python3.11 -m ensurepip --default-pip
-            python3.11 -m pip install --upgrade pip
-            '''
+    echo "Menginstal pip jika belum tersedia"
+    sh '''#!/bin/bash
+        apt-get update && apt-get install -y python3-pip python3-venv
+    '''
 
-            echo "Menginstal pytest dan pyinstaller tanpa virtual environment"
-            sh '''#!/bin/bash
-            python3.11 -m pip install pytest pyinstaller
-            '''
-        }
+    echo "Menginstal pytest dan pyinstaller tanpa virtual environment"
+    sh '''#!/bin/bash
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pytest pyinstaller
+    '''
+}
+
 
 
         stage('Build') {
