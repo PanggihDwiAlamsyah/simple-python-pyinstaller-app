@@ -11,12 +11,12 @@ node {
             checkout scm
         }
         
-     stage('Install Dependencies') {
+    stage('Install Dependencies') {
     echo "Menggunakan Python yang sudah terinstal di container"
 
     echo "Menginstal pip jika belum tersedia"
     sh '''#!/bin/bash
-        sudo apt-get update && sudo apt-get install -y python3-pip python3-venv
+        apt-get update && apt-get install -y python3-pip python3-venv
     '''
 
     echo "Menginstal pytest dan pyinstaller tanpa virtual environment"
@@ -25,6 +25,7 @@ node {
         python3 -m pip install pytest pyinstaller
     '''
 }
+
 
 
         stage('Build') {
