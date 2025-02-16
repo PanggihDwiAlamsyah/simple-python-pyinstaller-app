@@ -16,8 +16,8 @@ node {
         stage('Install Dependencies') {
             echo "Menginstal dependencies sistem yang dibutuhkan"
             sh '''#!/bin/bash
-                sudo apt update
-                sudo apt install -y python3.11 python3.11-dev python3.11-venv python3-pip build-essential
+                apt update
+                apt install -y python3 python3-venv python3-pip build-essential
             '''
 
             echo "Membuat ulang virtual environment"
